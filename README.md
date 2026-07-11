@@ -2,13 +2,13 @@
 Progetto: TFS vs Previdenza Complementare nel Comparto Difesa e Sicurezza
 🎯 Il Senso del Progetto (Perché lo stiamo facendo)
 
-Attualmente, il personale militare e le forze di polizia si trovano in un limbo previdenziale. Nonostante le mobilitazioni di varie associazioni per la creazione di un Fondo Pensione di categoria, lo Stato (in qualità di datore di lavoro) rimanda la responsabilità ai sindacati per l'avvio del tavolo negoziale, creando uno stallo confermato anche da diverse sentenze.
+Attualmente, il personale militare e le forze di polizia (Magistrati, Professori ordinari universitari e altre figure professionali) si trovano in un limbo previdenziale. Nonostante le mobilitazioni di varie associazioni per la creazione di un Fondo Pensione di categoria, lo Stato (in qualità di datore di lavoro) rimanda la responsabilità ai sindacati per l'avvio del tavolo negoziale, creando uno stallo confermato anche da diverse sentenze.
 
 Spesso si discute della cosiddetta "previdenza dedicata" (es. l'aumento dei coefficienti di trasformazione). Tuttavia, questa soluzione presenta un rischio enorme: è una misura puramente politica e può essere modificata o cancellata da qualsiasi governo in carica.
 
-La Previdenza Complementare, al contrario, è un contratto finanziario privato e normato, che mette al sicuro il capitale del lavoratore. Inoltre, rappresenta oggi il miglior strumento a disposizione per ottenere un impatto economico immediato e tangibile grazie alla deducibilità fiscale dei versamenti volontari (fino a 5.164,57 € annui): soldi che tornano direttamente in tasca al lavoratore in fase di conguaglio IRPEF.
+La Previdenza Complementare, al contrario, è un contratto finanziario privato e normato, che mette al sicuro il capitale del lavoratore. Inoltre, rappresenta oggi il miglior strumento a disposizione per ottenere un impatto economico immediato e tangibile grazie alla deducibilità fiscale dei versamenti volontari (fino a 5.300,00 € annui): soldi che tornano direttamente in tasca al lavoratore in fase di conguaglio IRPEF.
 
-Questo studio quantitativo nasce per dimostrare, dati alla mano, che per i militari passare dall'attuale sistema di liquidazione (TFS) a un sistema basato su TFR e Fondo Pensione Negoziale non è solo un'opzione, ma un'opportunità finanziaria superiore.
+Questo studio quantitativo nasce per dimostrare, dati alla mano, che per i militari (e le altre figure professionali) passare dall'attuale sistema di liquidazione (TFS) a un sistema basato su TFR e Fondo Pensione Negoziale non è solo un'opzione, ma un'opportunità finanziaria superiore.
 📚 Premesse e Contesto Normativo
 Il Regime Pubblico (TFS)
 
