@@ -9,6 +9,7 @@ Spesso si discute della cosiddetta "previdenza dedicata" (es. l'aumento dei coef
 La Previdenza Complementare, al contrario, è un contratto finanziario privato e normato, che mette al sicuro il capitale del lavoratore. Inoltre, rappresenta oggi il miglior strumento a disposizione per ottenere un impatto economico immediato e tangibile grazie alla deducibilità fiscale dei versamenti volontari (fino a 5.300,00 € annui): soldi che tornano direttamente in tasca al lavoratore in fase di conguaglio IRPEF.
 
 Questo studio quantitativo nasce per dimostrare, dati alla mano, che per i militari (e le altre figure professionali) passare dall'attuale sistema di liquidazione (TFS) a un sistema basato su TFR e Fondo Pensione Negoziale non è solo un'opzione, ma un'opportunità finanziaria superiore.
+
 📚 Premesse e Contesto Normativo
 Il Regime Pubblico (TFS)
 
@@ -20,6 +21,7 @@ La Previdenza Complementare e la flessibilità
 
 Con l'attuale legislazione (Dlgs 252/2005 e le novità previste dal 1 luglio 2026 sul silenzio-assenso), il lavoratore privato può destinare il TFR a un fondo pensione.
 A differenza del TFS (o del TFR lasciato in azienda) che è bloccato fino alla fine del servizio, il montante nel Fondo Pensione offre ampie garanzie di anticipazione durante la vita lavorativa (acquisto prima casa, spese mediche e, per una quota fino al 30%, per qualsiasi altra esigenza senza obbligo di giustificazione).
+
 🔬 Obiettivo dello Studio
 
 Vogliamo rispondere a una domanda chiara: e se i dipendenti pubblici in regime di TFS rinunciassero, tramite tavolo negoziale, al TFS per trasformarlo in TFR e aderire al Fondo Pensione Complementare? Come cambierebbe la loro ricchezza finale?
