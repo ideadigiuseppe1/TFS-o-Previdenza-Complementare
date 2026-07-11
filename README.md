@@ -1,5 +1,6 @@
 # TFS-o-Previdenza-Complementare
 Progetto: TFS vs Previdenza Complementare nel Comparto Difesa e Sicurezza
+
 🎯 Il Senso del Progetto (Perché lo stiamo facendo)
 
 Attualmente, il personale militare e le forze di polizia (Magistrati, Professori ordinari universitari e altre figure professionali) si trovano in un limbo previdenziale. Nonostante le mobilitazioni di varie associazioni per la creazione di un Fondo Pensione di categoria, lo Stato (in qualità di datore di lavoro) rimanda la responsabilità ai sindacati per l'avvio del tavolo negoziale, creando uno stallo confermato anche da diverse sentenze.
