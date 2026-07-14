@@ -1,7 +1,5 @@
 # TFS-o-Previdenza-Complementare
-Progetto: TFS vs Previdenza Complementare nel Comparto Difesa e Sicurezza
-
-🎯 Il Senso del Progetto (Perché lo stiamo facendo)
+🎯 Il senso del progetto
 
 Attualmente, il personale militare e le forze di polizia (Magistrati, Professori ordinari universitari e altre figure professionali) si trovano in un limbo previdenziale. Nonostante le mobilitazioni di varie associazioni per la creazione di un Fondo Pensione di categoria, lo Stato (in qualità di datore di lavoro) rimanda la responsabilità ai sindacati per l'avvio del tavolo negoziale, creando uno stallo confermato anche da diverse sentenze.
 
@@ -12,18 +10,18 @@ La Previdenza Complementare, al contrario, è un contratto finanziario privato e
 Questo studio quantitativo nasce per dimostrare, dati alla mano, che per i militari (e le altre figure professionali) passare dall'attuale sistema di liquidazione (TFS) a un sistema basato su TFR e Fondo Pensione Negoziale non è solo un'opzione, ma un'opportunità finanziaria superiore.
 
 📚 Premesse e Contesto Normativo
-Il Regime Pubblico (TFS)
+Il Regime pubblico (TFS)
 
 I militari, i professori ordinari e i magistrati usufruiscono del Trattamento di Fine Servizio (TFS). Questa "buonuscita" è calcolata prendendo un dodicesimo dell'80% dell'ultima retribuzione annua lorda (RAL) percepita, moltiplicata per gli anni di servizio (tredicesima inclusa).
-Il Regime Generale (TFR)
+Il Regime generale (TFR)
 
 La stragrande maggioranza dei dipendenti pubblici e privati ha un'indennità calcolata tramite il Trattamento di Fine Rapporto (art. 2120 c.c.): per ogni anno si accantona una quota pari alla RAL divisa per 13.5. Questo accantonamento viene rivalutato annualmente (1,5% fisso + 75% dell'inflazione ISTAT).
-La Previdenza Complementare e la flessibilità
+La Previdenza complementare e la flessibilità
 
 Con l'attuale legislazione (Dlgs 252/2005 e le novità previste dal 1 luglio 2026 sul silenzio-assenso), il lavoratore privato può destinare il TFR a un fondo pensione.
 A differenza del TFS (o del TFR lasciato in azienda) che è bloccato fino alla fine del servizio, il montante nel Fondo Pensione offre ampie garanzie di anticipazione durante la vita lavorativa (acquisto prima casa, spese mediche e, per una quota fino al 30%, per qualsiasi altra esigenza senza obbligo di giustificazione).
 
-🔬 Obiettivo dello Studio
+🔬 Obiettivo dello studio
 
 Vogliamo rispondere a una domanda chiara: e se i dipendenti pubblici in regime di TFS rinunciassero, tramite tavolo negoziale, al TFS per trasformarlo in TFR e aderire al Fondo Pensione Complementare? Come cambierebbe la loro ricchezza finale?
 
