@@ -1,9 +1,9 @@
-﻿;Anzianità richiesta per il grado (anni)
-Allievo;0
-Finanziere;0,5
-Maresciallo;2
-Maresciallo ordinario;4
-Maresciallo capo;10
-Maresciallo aiutante;17
-Luogotenente;25
-Luogotenente C.S.;29
+Grado,Anzianità richiesta per il grado (anni)
+Allievo,0
+Finanziere,0.5
+Maresciallo,2
+Maresciallo ordinario,4
+Maresciallo capo,10
+Maresciallo aiutante,17
+Luogotenente,25
+Luogotenente C.S.,29
