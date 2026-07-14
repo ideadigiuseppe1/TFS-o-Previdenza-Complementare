@@ -1,25 +1,25 @@
-﻿Grado;Anni di permanenza minimi;Stipendio tabellare annuo lordo;Ritenute previdenziali sullo stipendio;Imponibile fiscale Stipendio;Assegno funzionale lordo dopo 17 anni;Assegno funzionale imponibile fiscalmente dopo 17 anni;Assegno funzionale lordo dopo 27 anni;Assegno funzionale imponibile fiscalmente dopo 27 anni;Assegno funzionale lordo dopo 32 anni;Assegno funzionale imponibile fiscalmente dopo 32 anni
-Allievo;0;1268.95;111.67;1157.28;0;0;0;0;0;0
-Finanziere;0.5;1714.80;172.55;1542.25;0;0;0;0;0;0
-Maresciallo;2;2032.39;218.05;1814.34;1829.4;1588.8;3070.5;2666.64;3531.03;3066.6
-Maresciallo Ordinario;4;2134.21;225.98;1908.23;1829.4;1588.8;3070.5;2666.64;3531.03;3066.6
-Maresciallo Capo;10;2174.94;231.29;1943.65;1829.4;1588.8;3070.5;2666.64;3531.03;3066.6
-Maresciallo Aiutante;17;2240.10;239.92;2000.18;1829.4;1588.8;3070.5;2666.64;3531.03;3066.6
-Luogotenente;25;2337.85;253.71;2084.14;1829.4;1588.8;3070.5;2666.64;3531.03;3066.6
-Luogotenente C.S.;29;2411.17;264.08;2147.09;1841.4;1599.24;3082.5;2677.08;3543.03;3077.04
-;;;;;;;;;;
-;;;;;;;;;;
-Allocazione portafoglio;;;;;;;;;;
-Da inizio simulazione a 45  anni;100% Azionario;;;;;;;;;
-dai 46 ai 50 anni;100% Bilanciato dinamico;;;;;;;;;
-Dai 51 ai 55 anni;100% Bilanciato crescita;;;;;;;;;
-Dai 56 anni fino al pensionamento;100% Bilanciato prudente;;;;;;;;;
-;;;;;;;;;;
-Rendimento netto comparti;;;;;;;;;;
-Azionario;5.02%;;;;;;;;;
-Bilanciato dinamico;4.37%;;;;;;;;;
-Bilanciato crescita;3.09%;;;;;;;;;
-Bilanciato prudente;2.32%;;;;;;;;;
-;;;;;;;;;;
-TFS;"=(1/12)*0.8*""Ultima RAL percepita""*""numero anni di servizio""";;;;;;;;;
-TFR;=[@[Fondo Anno Precedente]] + ([@RAL] / 13,5) + ([@[Fondo Anno Precedente]] * (0,015 + 0,75 * [@Inflazione]));;;;;;;;;
+Grado,Anni di permanenza minimi,Stipendio tabellare annuo lordo,Ritenute previdenziali sullo stipendio,Imponibile fiscale Stipendio,Assegno funzionale lordo dopo 17 anni,Assegno funzionale imponibile fiscalmente dopo 17 anni,Assegno funzionale lordo dopo 27 anni,Assegno funzionale imponibile fiscalmente dopo 27 anni,Assegno funzionale lordo dopo 32 anni,Assegno funzionale imponibile fiscalmente dopo 32 anni
+Allievo,0,1268.95,111.67,1157.28,0,0,0,0,0,0
+Finanziere,0.5,1714.80,172.55,1542.25,0,0,0,0,0,0
+Maresciallo,2,2032.39,218.05,1814.34,1829.4,1588.8,3070.5,2666.64,3531.03,3066.6
+Maresciallo Ordinario,4,2134.21,225.98,1908.23,1829.4,1588.8,3070.5,2666.64,3531.03,3066.6
+Maresciallo Capo,10,2174.94,231.29,1943.65,1829.4,1588.8,3070.5,2666.64,3531.03,3066.6
+Maresciallo Aiutante,17,2240.10,239.92,2000.18,1829.4,1588.8,3070.5,2666.64,3531.03,3066.6
+Luogotenente,25,2337.85,253.71,2084.14,1829.4,1588.8,3070.5,2666.64,3531.03,3066.6
+Luogotenente C.S.,29,2411.17,264.08,2147.09,1841.4,1599.24,3082.5,2677.08,3543.03,3077.04
+,,,,,,,,,,
+,,,,,,,,,,
+Allocazione portafoglio,,,,,,,,,,
+Da inizio simulazione a 45 anni,100% Azionario,,,,,,,,,
+dai 46 ai 50 anni,100% Bilanciato dinamico,,,,,,,,,
+Dai 51 ai 55 anni,100% Bilanciato crescita,,,,,,,,,
+Dai 56 anni fino al pensionamento,100% Bilanciato prudente,,,,,,,,,
+,,,,,,,,,,
+Rendimento netto comparti,,,,,,,,,,
+Azionario,5.02%,,,,,,,,,
+Bilanciato dinamico,4.37%,,,,,,,,,
+Bilanciato crescita,3.09%,,,,,,,,,
+Bilanciato prudente,2.32%,,,,,,,,,
+,,,,,,,,,,
+TFS,"=(1/12)*0.8*""Ultima RAL percepita""*""numero anni di servizio""",,,,,,,,,
+TFR,"=[@[Fondo Anno Precedente]] + ([@RAL] / 13.5) + ([@[Fondo Anno Precedente]] * (0.015 + 0.75 * [@Inflazione]))",,,,,,,,,
