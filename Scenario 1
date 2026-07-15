@@ -1,175 +1,446 @@
 import matplotlib.pyplot as plt
 
-# ==========================================
-# 1. PARAMETRI DI SIMULAZIONE
-# ==========================================
-eta_inizio = 18
-eta_pensione = 61
-anni_servizio = eta_pensione - eta_inizio # 43 anni
-
-tasso_crescita_stipendio = 0.0203 # 2.03% (Rinnovi contrattuali e progressione media)
-inflazione = 0.02 # 2% (Utilizzata per calcolare il potere d'acquisto reale)
-
-franchigia_tfs_per_anno = 309.87
-coeff_trasformazione_61 = 0.04639 # 4.639%
-
-# Scaglioni IRPEF
-scaglioni_irpef = [
-    (28000, 0.23), # Fino a 28.000: 23%
-    (50000, 0.33), # Da 28.001 a 50.000: 33%
-    (float('inf'), 0.43) # Oltre 50.000: 43%
-]
-
-# Struttura dei gradi militari (Mesi minimi di permanenza -> anni_start)
-gradi_struttura = [
-    {"grado": "Allievo", "anni_start": 0, "tabellare": 1268.95, "ritenuta": 111.67},
-    {"grado": "Finanziere", "anni_start": 0.5, "tabellare": 1714.80, "ritenuta": 172.55},
-    {"grado": "Maresciallo", "anni_start": 2, "tabellare": 2032.39, "ritenuta": 218.05},
-    {"grado": "Maresciallo Ordinario", "anni_start": 4, "tabellare": 2134.21, "ritenuta": 225.98},
-    {"grado": "Maresciallo Capo", "anni_start": 10, "tabellare": 2174.94, "ritenuta": 231.29},
-    {"grado": "Maresciallo Aiutante", "anni_start": 17, "tabellare": 2240.10, "ritenuta": 239.92},
-    {"grado": "Luogotenente", "anni_start": 25, "tabellare": 2337.85, "ritenuta": 253.71},
-    {"grado": "Luogotenente C.S.", "anni_start": 29, "tabellare": 2411.17, "ritenuta": 264.08}
-]
-
-# Assegni funzionali per anni di servizio
-assegni_funzionali = {
-    17: {"lordo": 1829.40, "imponibile": 1588.80},
-    27: {"lordo": 3070.50, "imponibile": 2666.64},
-    32: {"lordo": 3531.03, "imponibile": 3066.60}
-}
-
-# ==========================================
-# 2. FUNZIONI DI SUPPORTO
-# ==========================================
 def calcola_irpef(imponibile):
-    tasse = 0
-    reddito_rimanente = imponibile
-    limite_precedente = 0
-    for limite, aliquota in scaglioni_irpef:
-        fascia = limite - limite_precedente
-        if reddito_rimanente > fascia:
-            tasse += fascia * aliquota
-            reddito_rimanente -= fascia
-            limite_precedente = limite
-        else:
-            tasse += reddito_rimanente * aliquota
-            break
+    """
+    Scaglioni IRPEF 2025:
+    - Fino a 28.000€: 23%
+    - Da 28.001€ a 50.000€: 33%
+    - Oltre 50.000€: 43%
+    """
+    tasse = 0.0
+    if imponibile <= 0:
+        return 0.0
+    if imponibile > 50000:
+        tasse += (imponibile - 50000) * 0.43
+        imponibile = 50000
+    if imponibile > 28000:
+        tasse += (imponibile - 28000) * 0.33
+        imponibile = 28000
+    tasse += imponibile * 0.23
     return tasse
 
-def ottieni_profilo_anno(anno):
-    grado_attuale = gradi_struttura[0]
-    for g in gradi_struttura:
-        if anno >= g["anni_start"]:
-            grado_attuale = g
-            
-    ass_funzionale_attuale = {"lordo": 0, "imponibile": 0}
-    if anno >= 32:
-        ass_funzionale_attuale = assegni_funzionali[32]
-    elif anno >= 27:
-        ass_funzionale_attuale = assegni_funzionali[27]
-    elif anno >= 17:
-        ass_funzionale_attuale = assegni_funzionali[17]
-        
-    return grado_attuale, ass_funzionale_attuale
 
-def calcola_valore_reale(valore_nominale, anni_ritardo):
-    """Sconta l'inflazione per restituire il potere d'acquisto odierno"""
-    return valore_nominale / ((1 + inflazione) ** anni_ritardo)
+def aliquota_media_irpef(imponibile):
+    """Restituisce l'aliquota media effettiva IRPEF su un dato imponibile."""
+    if imponibile <= 0:
+        return 0.0
+    return calcola_irpef(imponibile) / imponibile
 
-# ==========================================
-# 3. MOTORE DI SIMULAZIONE (ANNO PER ANNO)
-# ==========================================
-storia_ral = []
-storia_imponibile_irpef = []
-storia_tasse = []
-storia_netto = []
-storia_anni = list(range(1, anni_servizio + 1))
 
-for anno in range(1, anni_servizio + 1):
-    rivalutazione = (1 + tasso_crescita_stipendio) ** (anno - 1)
-    grado, assegno = ottieni_profilo_anno(anno - 1)
-    
-    stipendio_mensile = grado["tabellare"] * rivalutazione
-    ritenuta_mensile = grado["ritenuta"] * rivalutazione
-    assegno_lordo = assegno["lordo"] * rivalutazione
-    assegno_imponibile = assegno["imponibile"] * rivalutazione
-    
-    # RAL: 12 mensilità + Tredicesima + Assegno
-    ral_anno = (stipendio_mensile * 13) + assegno_lordo
-    
-    # Ritenute: 12 mesi quota piena + 13esima agevolata all'8.80%
-    ritenute_annue = (ritenuta_mensile * 12) + (stipendio_mensile * 0.088)
-    imponibile_irpef = ral_anno - ritenute_annue - (assegno_lordo - assegno_imponibile)
-    
-    irpef_anno = calcola_irpef(imponibile_irpef)
-    netto_anno = ral_anno - ritenute_annue - irpef_anno
-    
-    storia_ral.append(ral_anno)
-    storia_imponibile_irpef.append(imponibile_irpef)
-    storia_tasse.append(irpef_anno)
-    storia_netto.append(netto_anno)
+def ottieni_ral_militare_base(anni_servizio):
+    """
+    RAL BASE 2025 per il grado corrispondente agli anni di servizio.
+    Questi valori verranno poi rivalutati anno per anno del 2.03%.
+    """
+    if anni_servizio < 0.5:
+        stipendio_m = 1268.95
+        assegno_a = 0.0
+    elif anni_servizio < 2:
+        stipendio_m = 1714.80
+        assegno_a = 0.0
+    elif anni_servizio < 4:
+        stipendio_m = 2032.39
+        assegno_a = 0.0
+    elif anni_servizio < 10:
+        stipendio_m = 2134.21
+        assegno_a = 0.0
+    elif anni_servizio < 17:
+        stipendio_m = 2174.94
+        assegno_a = 0.0
+    elif anni_servizio < 25:
+        stipendio_m = 2240.10
+        assegno_a = 1829.4
+    elif anni_servizio < 29:
+        stipendio_m = 2337.85
+        assegno_a = 3070.5 if anni_servizio >= 27 else 1829.4
+    else:
+        stipendio_m = 2411.17
+        if anni_servizio < 27:
+            assegno_a = 1841.4
+        elif anni_servizio < 32:
+            assegno_a = 3082.5
+        else:
+            assegno_a = 3543.03
 
-stipendio_medio_netto = sum(storia_netto) / len(storia_netto)
+    ral = (stipendio_m * 13) + assegno_a
+    return ral
 
-# ==========================================
-# 4. CALCOLO TFS (NOMINALE E REALE)
-# ==========================================
-ultima_ral = storia_ral[-1]
-tfs_lordo = (1 / 12) * 0.8 * ultima_ral * anni_servizio
 
-ultimi_5_imponibili = storia_imponibile_irpef[-5:]
-ultime_5_tasse = storia_tasse[-5:]
-aliquota_media_tfs = sum(ultime_5_tasse) / sum(ultimi_5_imponibili)
+def get_rendimento_fp(eta):
+    """Rendimenti NETTI (già al netto dell'imposta sui rendimenti del fondo)."""
+    if eta <= 45:
+        return 0.0502
+    elif eta <= 50:
+        return 0.0437
+    elif eta <= 55:
+        return 0.0309
+    else:
+        return 0.0232
 
-base_imponibile_tfs = tfs_lordo - (franchigia_tfs_per_anno * anni_servizio)
-imposta_tfs = base_imponibile_tfs * aliquota_media_tfs
-tfs_netto = tfs_lordo - imposta_tfs
 
-# Calcolo Tranches (si scompone in base allo scaglione lordo)
-tranches_nette = []
-if tfs_lordo <= 50000:
-    tranches_nette = [tfs_netto]
-elif tfs_lordo <= 100000:
-    tasse_tranche_1 = (50000 / tfs_lordo) * imposta_tfs
-    tranches_nette.append(50000 - tasse_tranche_1)
-    tranches_nette.append(tfs_netto - (50000 - tasse_tranche_1))
-else:
-    tasse_tranche_1 = (50000 / tfs_lordo) * imposta_tfs
-    tranches_nette.append(50000 - tasse_tranche_1)
-    tranches_nette.append(50000 - tasse_tranche_1)
-    tranches_nette.append(tfs_netto - 2 * (50000 - tasse_tranche_1))
+def simula_mondo_parallelo():
+    eta_iniziale = 18
+    eta_pensionamento = 61
+    anni_servizio = eta_pensionamento - eta_iniziale  # 43
+    anni_aspettativa_vita = 24.884
+    tasso_inflazione = 0.02
+    tasso_rivalutazione_stipendi = 0.0203
+    franchigia_tfs_per_anno = 309.87
 
-# ==========================================
-# 5. OUTPUT E GRAFICO
-# ==========================================
-print("=== METRICHE DI VITA LAVORATIVA ===")
-print(f"Stipendio Medio Netto Annuo: {stipendio_medio_netto:,.2f} €")
-print(f"(Potere d'acquisto reale medio: {calcola_valore_reale(stipendio_medio_netto, anni_servizio/2):,.2f} €)\n")
+    # --- TRACKING ---
+    storia_eta = []
+    storia_ral = []
 
-print("=== RISULTATI SCENARIO 1: TFS (18-61 anni) ===")
-print(f"Ultima RAL (Anno 43): {ultima_ral:,.2f} € (Reale: {calcola_valore_reale(ultima_ral, anni_servizio):,.2f} €)")
-print(f"Aliquota IRPEF media applicata al TFS: {aliquota_media_tfs*100:.2f}%")
-print(f"TFS Lordo: {tfs_lordo:,.2f} € (Reale: {calcola_valore_reale(tfs_lordo, anni_servizio):,.2f} €)")
-print(f"TFS Netto: {tfs_netto:,.2f} € (Reale: {calcola_valore_reale(tfs_netto, anni_servizio):,.2f} €)\n")
+    # Scenario TFS
+    storia_netto_tfs = []
+    storia_netto_tfs_reale = []
+    totale_netto_nominale_tfs = 0.0
+    totale_netto_reale_tfs = 0.0
+    storia_imponibile_tfs = []
 
-print("--- Erogazione Tranches TFS (con svalutazione per ritardo) ---")
-for i, tranche in enumerate(tranches_nette):
-    ritardo_anni = 1 + i # 1° anno = 1, 2° anno = 2, ecc.
-    anni_svalutazione_totali = anni_servizio + ritardo_anni
-    tranche_reale = calcola_valore_reale(tranche, anni_svalutazione_totali)
-    
-    mesi_attesa = 12 + (12 * i)
-    print(f"Tranche {i+1} (dopo {mesi_attesa} mesi): {tranche:,.2f} € | Valore Reale Odierno: {tranche_reale:,.2f} €")
+    # Scenario TFR + Fondo Pensione
+    storia_netto_fp = []
+    storia_netto_fp_reale = []
+    totale_netto_nominale_fp = 0.0
+    totale_netto_reale_fp = 0.0
 
-# Creazione del grafico (Valori Nominali)
-plt.figure(figsize=(10, 6))
-plt.plot(storia_anni, storia_ral, label="RAL (Lorda Nominale)", color="blue", linewidth=2)
-plt.plot(storia_anni, storia_netto, label="Guadagno Netto Annuo (Nominale)", color="green", linewidth=2)
-plt.title("Proiezione Guadagno Annuo Nominale - Carriera 18-61 anni", fontsize=14)
-plt.xlabel("Anni di Servizio", fontsize=12)
-plt.ylabel("Euro (€)", fontsize=12)
-plt.grid(True, linestyle='--', alpha=0.7)
-plt.legend()
-plt.tight_layout()
-plt.show()
+    # Fondo Pensione: tracking separato contributi vs plusvalenze
+    montante_fp_totale = 0.0          # Valore totale del fondo (contributi + rendimenti)
+    totale_contributi_versati = 0.0   # Solo contributi puri (dip + datore + TFR)
+    # La plusvalenza sarà: montante_fp_totale - totale_contributi_versati
+    # Ma i rendimenti sono GIÀ NETTI → la plusvalenza non va ritassata
+    # La tassazione al 9% si applica SOLO ai contributi versati
+
+    # =====================================================================
+    #                    SIMULAZIONE ANNO PER ANNO
+    # =====================================================================
+    for anno in range(anni_servizio):
+        eta = eta_iniziale + anno
+        yos = anno
+
+        ral_base = ottieni_ral_militare_base(yos)
+        ral = ral_base * ((1 + tasso_rivalutazione_stipendi) ** anno)
+
+        storia_eta.append(eta)
+        storia_ral.append(ral)
+
+        inps = ral * 0.088
+        fattore_sconto = (1 + tasso_inflazione) ** anno
+
+        # ---------------------------------------------------------------
+        # SCENARIO 1: TFS
+        # ---------------------------------------------------------------
+        imponibile_tfs = ral - inps
+        irpef_tfs = calcola_irpef(imponibile_tfs)
+        netto_tfs = ral - inps - irpef_tfs
+
+        storia_netto_tfs.append(netto_tfs)
+        storia_netto_tfs_reale.append(netto_tfs / fattore_sconto)
+        totale_netto_nominale_tfs += netto_tfs
+        totale_netto_reale_tfs += netto_tfs / fattore_sconto
+        storia_imponibile_tfs.append(imponibile_tfs)
+
+        # ---------------------------------------------------------------
+        # SCENARIO 2: TFR + FONDO PENSIONE
+        # ---------------------------------------------------------------
+        contributo_dipendente = ral * 0.01
+        contributo_datore = ral * 0.01
+
+        imponibile_fp = ral - inps - contributo_dipendente
+        irpef_fp = calcola_irpef(imponibile_fp)
+        netto_fp = ral - inps - irpef_fp - contributo_dipendente
+
+        storia_netto_fp.append(netto_fp)
+        storia_netto_fp_reale.append(netto_fp / fattore_sconto)
+        totale_netto_nominale_fp += netto_fp
+        totale_netto_reale_fp += netto_fp / fattore_sconto
+
+        # Flussi dell'anno nel fondo pensione
+        tfr_annuo = (ral / 13.5) - (ral * 0.005)
+        flusso_anno = contributo_dipendente + contributo_datore + tfr_annuo
+
+        # Capitalizzazione: prima rivaluto il montante esistente, poi aggiungo
+        if anno > 0:
+            rendimento = get_rendimento_fp(eta)
+            montante_fp_totale *= (1 + rendimento)
+            # I rendimenti sono GIÀ netti → non incrementano totale_contributi_versati
+
+        montante_fp_totale += flusso_anno
+        totale_contributi_versati += flusso_anno
+
+    # =====================================================================
+    #              FINE CARRIERA: LIQUIDAZIONI
+    # =====================================================================
+    ultima_ral = storia_ral[-1]
+
+    # =================================================================
+    # 1. TFS — Tassazione Separata CORRETTA
+    # =================================================================
+    # TFS Lordo
+    tfs_lordo = (1.0 / 12.0) * 0.80 * ultima_ral * anni_servizio
+
+    # Franchigia: €309,87 × anni di servizio
+    franchigia_totale = franchigia_tfs_per_anno * anni_servizio
+    base_imponibile_tfs = max(0, tfs_lordo - franchigia_totale)
+
+    # Aliquota media IRPEF: calcolata sul reddito di riferimento
+    # Il reddito di riferimento = (TFS_lordo / anni_servizio) × 12
+    # poi si calcola l'IRPEF su quel reddito e si divide per ottenerla
+    # Metodo semplificato usato dall'AdE:
+    # reddito_riferimento = (base_imponibile_tfs / anni_servizio) * 12
+    reddito_riferimento = (base_imponibile_tfs / anni_servizio) * 12
+    aliquota_tfs = aliquota_media_irpef(reddito_riferimento)
+
+    # Imposta TFS = aliquota × base imponibile (dopo franchigia)
+    imposta_tfs = base_imponibile_tfs * aliquota_tfs
+    tfs_netto = tfs_lordo - imposta_tfs
+
+    # Tempistiche di pagamento TFS (12/24/36 mesi dopo)
+    if tfs_lordo <= 50000:
+        rata1 = tfs_netto
+        payout_desc = f"1 Rata (dopo 12 mesi): € {rata1:,.2f}"
+        tfs_netto_reale = tfs_netto / ((1 + tasso_inflazione) ** (anni_servizio + 1))
+    elif tfs_lordo <= 100000:
+        # Prima rata: fino a 50k lordi, proporzionata
+        prop_1 = 50000 / tfs_lordo
+        quota1 = tfs_netto * prop_1
+        quota2 = tfs_netto - quota1
+        payout_desc = (f"2 Rate: dopo 12 mesi € {quota1:,.2f} | "
+                       f"dopo 24 mesi € {quota2:,.2f}")
+        tfs_netto_reale = (quota1 / ((1 + tasso_inflazione) ** (anni_servizio + 1)) +
+                           quota2 / ((1 + tasso_inflazione) ** (anni_servizio + 2)))
+    else:
+        prop_1 = 50000 / tfs_lordo
+        prop_2 = 50000 / tfs_lordo
+        quota1 = tfs_netto * prop_1
+        quota2 = tfs_netto * prop_2
+        quota3 = tfs_netto - quota1 - quota2
+        payout_desc = (f"3 Rate: dopo 12 mesi € {quota1:,.2f} | "
+                       f"dopo 24 mesi € {quota2:,.2f} | "
+                       f"dopo 36 mesi € {quota3:,.2f}")
+        tfs_netto_reale = (quota1 / ((1 + tasso_inflazione) ** (anni_servizio + 1)) +
+                           quota2 / ((1 + tasso_inflazione) ** (anni_servizio + 2)) +
+                           quota3 / ((1 + tasso_inflazione) ** (anni_servizio + 3)))
+
+    # =================================================================
+    # 2. FONDO PENSIONE — Tassazione CORRETTA
+    # =================================================================
+    # I rendimenti nel fondo sono GIÀ netti (tassati anno per anno al 20%/12.5%)
+    # Al riscatto, la tassazione agevolata (9-15%) si applica SOLO ai contributi
+    plusvalenza_netta = montante_fp_totale - totale_contributi_versati  # già tassata → esentasse al riscatto
+
+    # Aliquota agevolata: parte dal 15%, scende di 0.30% per ogni anno oltre il 15°
+    sconto_fp = min(0.06, max(0.0, (anni_servizio - 15) * 0.003))
+    aliquota_fp = 0.15 - sconto_fp  # Minimo 9%
+
+    imposta_fp = totale_contributi_versati * aliquota_fp
+    montante_fp_netto = montante_fp_totale - imposta_fp
+
+    # Suddivisione: 50% capitale + 50% rendita
+    lump_sum_fp = montante_fp_netto * 0.50
+    capitale_per_rendita = montante_fp_netto * 0.50
+
+    # Lump sum: erogato subito al pensionamento
+    lump_sum_fp_reale = lump_sum_fp / ((1 + tasso_inflazione) ** anni_servizio)
+
+    # Rendita vitalizia
+    r_rendita = 0.0232
+    n_rendita = anni_aspettativa_vita
+    rendita_annua_nominale = capitale_per_rendita * (r_rendita / (1 - (1 + r_rendita) ** (-n_rendita)))
+
+    # Attualizzazione rendita rata per rata
+    rendita_totale_nominale = 0.0
+    rendita_totale_reale = 0.0
+    anni_rendita_int = int(n_rendita)
+    fraz = n_rendita - anni_rendita_int
+
+    for k in range(1, anni_rendita_int + 1):
+        anno_abs = anni_servizio + k
+        rendita_totale_nominale += rendita_annua_nominale
+        rendita_totale_reale += rendita_annua_nominale / ((1 + tasso_inflazione) ** anno_abs)
+
+    if fraz > 0:
+        anno_abs = anni_servizio + anni_rendita_int + 1
+        rata_fraz = rendita_annua_nominale * fraz
+        rendita_totale_nominale += rata_fraz
+        rendita_totale_reale += rata_fraz / ((1 + tasso_inflazione) ** anno_abs)
+
+    # Rendita mensile per comodità
+    rendita_mensile_nominale = rendita_annua_nominale / 12
+
+    # =====================================================================
+    #                       METRICHE TOTALI
+    # =====================================================================
+    # Valore attuale di tutti i pagamenti futuri (capitale + rendite)
+    valore_attuale_fp = lump_sum_fp_reale + rendita_totale_reale
+
+    totale_ricchezza_nominale_tfs = totale_netto_nominale_tfs + tfs_netto
+    totale_ricchezza_nominale_fp = totale_netto_nominale_fp + lump_sum_fp + rendita_totale_nominale
+
+    totale_ricchezza_reale_tfs = totale_netto_reale_tfs + tfs_netto_reale
+    totale_ricchezza_reale_fp = totale_netto_reale_fp + lump_sum_fp_reale + rendita_totale_reale
+
+    media_netto_nominale_tfs = totale_netto_nominale_tfs / anni_servizio
+    media_netto_nominale_fp = totale_netto_nominale_fp / anni_servizio
+    media_netto_reale_tfs = totale_netto_reale_tfs / anni_servizio
+    media_netto_reale_fp = totale_netto_reale_fp / anni_servizio
+
+    # =====================================================================
+    #                           GRAFICI
+    # =====================================================================
+    fig, axes = plt.subplots(2, 1, figsize=(12, 10))
+
+    axes[0].plot(storia_eta, storia_netto_tfs, label='Netto Annuo TFS', color='#1f77b4', linewidth=2)
+    axes[0].plot(storia_eta, storia_netto_fp, label='Netto Annuo TFR+FP', color='#2ca02c', linestyle='dashed', linewidth=2)
+    axes[0].fill_between(storia_eta, storia_netto_tfs, storia_netto_fp,
+                         color='red', alpha=0.15, label='Costo netto 1% dipendente')
+    axes[0].set_title('Stipendio Netto Annuo NOMINALE (rivalutazione 2.03%/anno)', fontsize=12, fontweight='bold')
+    axes[0].set_xlabel('Età')
+    axes[0].set_ylabel('€ nominali')
+    axes[0].legend()
+    axes[0].grid(True, alpha=0.3)
+
+    axes[1].plot(storia_eta, storia_netto_tfs_reale, label='Netto Annuo TFS (reale)', color='#1f77b4', linewidth=2)
+    axes[1].plot(storia_eta, storia_netto_fp_reale, label='Netto Annuo TFR+FP (reale)', color='#2ca02c', linestyle='dashed', linewidth=2)
+    axes[1].fill_between(storia_eta, storia_netto_tfs_reale, storia_netto_fp_reale,
+                         color='red', alpha=0.15, label='Costo netto 1% dipendente')
+    axes[1].set_title("Stipendio Netto Annuo in POTERE D'ACQUISTO ODIERNO (inflazione 2%/anno)",
+                      fontsize=12, fontweight='bold')
+    axes[1].set_xlabel('Età')
+    axes[1].set_ylabel('€ odierni')
+    axes[1].legend()
+    axes[1].grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+
+    # =====================================================================
+    #                           REPORT
+    # =====================================================================
+    fattore_fine = (1 + tasso_inflazione) ** anni_servizio
+
+    print("=" * 85)
+    print("    CONFRONTO MILITARE: SCENARIO TFS vs MONDO IPOTETICO TFR + FONDO PENSIONE")
+    print("=" * 85)
+    print(f"  Carriera            : Da {eta_iniziale} a {eta_pensionamento} anni ({anni_servizio} anni di servizio)")
+    print(f"  Rivalutazione stip. : +{tasso_rivalutazione_stipendi*100:.2f}% annuo")
+    print(f"  Inflazione          : +{tasso_inflazione*100:.2f}% annuo")
+    print(f"  RAL Anno 1 (2025)   : € {storia_ral[0]:,.2f}")
+    print(f"  Ultima RAL Nominale : € {ultima_ral:,.2f}")
+    print(f"  Ultima RAL Reale    : € {ultima_ral / fattore_fine:,.2f}")
+    print("-" * 85)
+
+    print("\n>>> 1. FLUSSI DI CASSA DURANTE LA CARRIERA (43 anni)")
+    print(f"  {'':>38}{'TFS':>18}{'TFR+FP':>18}{'Delta':>18}")
+    print(f"  {'Totale Netto Nominale':>38}"
+          f"{'€ {:,.0f}'.format(totale_netto_nominale_tfs):>18}"
+          f"{'€ {:,.0f}'.format(totale_netto_nominale_fp):>18}"
+          f"{'€ {:,.0f}'.format(totale_netto_nominale_fp - totale_netto_nominale_tfs):>18}")
+    print(f"  {'Totale Netto Reale (€ oggi)':>38}"
+          f"{'€ {:,.0f}'.format(totale_netto_reale_tfs):>18}"
+          f"{'€ {:,.0f}'.format(totale_netto_reale_fp):>18}"
+          f"{'€ {:,.0f}'.format(totale_netto_reale_fp - totale_netto_reale_tfs):>18}")
+    print(f"  {'Media Annua Nominale':>38}"
+          f"{'€ {:,.2f}'.format(media_netto_nominale_tfs):>18}"
+          f"{'€ {:,.2f}'.format(media_netto_nominale_fp):>18}"
+          f"{'€ {:,.2f}'.format(media_netto_nominale_fp - media_netto_nominale_tfs):>18}")
+    print(f"  {'Media Annua Reale (€ oggi)':>38}"
+          f"{'€ {:,.2f}'.format(media_netto_reale_tfs):>18}"
+          f"{'€ {:,.2f}'.format(media_netto_reale_fp):>18}"
+          f"{'€ {:,.2f}'.format(media_netto_reale_fp - media_netto_reale_tfs):>18}")
+
+    print("-" * 85)
+    print("\n>>> 2. LIQUIDAZIONE TFS (SCENARIO ATTUALE)")
+    print(f"  TFS Lordo                        : € {tfs_lordo:,.2f}")
+    print(f"  Franchigia (€309.87 × {anni_servizio} anni)   : € {franchigia_totale:,.2f}")
+    print(f"  Base Imponibile TFS              : € {base_imponibile_tfs:,.2f}")
+    print(f"  Reddito di Riferimento           : € {reddito_riferimento:,.2f}")
+    print(f"  Aliquota Media Tass. Separata    : {aliquota_tfs*100:.2f}%")
+    print(f"  Imposta TFS                      : € {imposta_tfs:,.2f}")
+    print(f"  TFS NETTO                        : € {tfs_netto:,.2f}")
+    print(f"  TFS Netto Reale (€ oggi)         : € {tfs_netto_reale:,.2f}")
+    print(f"  Erogazione                       : {payout_desc}")
+
+    print("-" * 85)
+    print("\n>>> 3. FONDO PENSIONE (SCENARIO IPOTETICO)")
+    print(f"  --- Composizione Montante ---")
+    print(f"  Contributi Versati (dip+datore+TFR) : € {totale_contributi_versati:,.2f}")
+    print(f"  Plusvalenze Nette (già tassate)      : € {plusvalenza_netta:,.2f}")
+    print(f"  MONTANTE TOTALE LORDO                : € {montante_fp_totale:,.2f}")
+    print(f"")
+    print(f"  --- Tassazione al Riscatto ---")
+    print(f"  Aliquota agevolata (dopo {anni_servizio} anni)    : {aliquota_fp*100:.2f}%")
+    print(f"  Base imponibile (solo contributi)     : € {totale_contributi_versati:,.2f}")
+    print(f"  Imposta al riscatto                   : € {imposta_fp:,.2f}")
+    print(f"  Plusvalenze (esenti, già tassate)      : € {plusvalenza_netta:,.2f}")
+    print(f"  MONTANTE NETTO DISPONIBILE            : € {montante_fp_netto:,.2f}")
+    print(f"")
+    print(f"  --- Erogazione ---")
+    print(f"  50% Capitale (lump sum subito)        : € {lump_sum_fp:,.2f}")
+    print(f"       → in € oggi                     : € {lump_sum_fp_reale:,.2f}")
+    print(f"  50% Rendita Vitalizia ({n_rendita:.1f} anni)    :")
+    print(f"       Rendita annua nominale           : € {rendita_annua_nominale:,.2f}")
+    print(f"       Rendita mensile nominale         : € {rendita_mensile_nominale:,.2f}")
+    print(f"       Totale rendite nominali          : € {rendita_totale_nominale:,.2f}")
+    print(f"       Totale rendite reali (€ oggi)    : € {rendita_totale_reale:,.2f}")
+    print(f"")
+    print(f"  --- Valore Attuale di tutti i pagamenti futuri (capitale + rendite) ---")
+    print(f"  VA Lump Sum                           : € {lump_sum_fp_reale:,.2f}")
+    print(f"  VA Rendite                            : € {rendita_totale_reale:,.2f}")
+    print(f"  VA TOTALE FONDO PENSIONE              : € {valore_attuale_fp:,.2f}")
+
+    print("-" * 85)
+    print("\n>>> 4. TOTAL RETURN VITA INTERA")
+    print("  (Somma stipendi netti + liquidazione/rendite)")
+    print(f"  {'':>42}{'TFS':>20}{'TFR+FP':>20}")
+    print(f"  {'TOTALE NOMINALE':>42}"
+          f"{'€ {:,.0f}'.format(totale_ricchezza_nominale_tfs):>20}"
+          f"{'€ {:,.0f}'.format(totale_ricchezza_nominale_fp):>20}")
+    print(f"  {'TOTALE REALE (€ oggi)':>42}"
+          f"{'€ {:,.0f}'.format(totale_ricchezza_reale_tfs):>20}"
+          f"{'€ {:,.0f}'.format(totale_ricchezza_reale_fp):>20}")
+
+    vantaggio_nom = totale_ricchezza_nominale_fp - totale_ricchezza_nominale_tfs
+    vantaggio_reale = totale_ricchezza_reale_fp - totale_ricchezza_reale_tfs
+
+    print(f"\n  VANTAGGIO GLOBALE FONDO PENSIONE:")
+    print(f"    Nominale : {'+ ' if vantaggio_nom >= 0 else ''}€ {vantaggio_nom:,.2f}")
+    print(f"    Reale    : {'+ ' if vantaggio_reale >= 0 else ''}€ {vantaggio_reale:,.2f} (potere d'acquisto odierno)")
+    print("=" * 85)
+
+    # --- APPENDICE: Rendita anno per anno ---
+    print("\n>>> APPENDICE: Rendita FP — Prime e ultime 5 rate attualizzate")
+    print(f"  {'#':>6}{'Età':>6}{'Nominale':>18}{'Reale (€ oggi)':>20}")
+    for k in range(1, min(6, anni_rendita_int + 1)):
+        anno_abs = anni_servizio + k
+        r_reale = rendita_annua_nominale / ((1 + tasso_inflazione) ** anno_abs)
+        print(f"  {k:>6}{eta_pensionamento + k:>6}"
+              f"{'€ {:,.2f}'.format(rendita_annua_nominale):>18}"
+              f"{'€ {:,.2f}'.format(r_reale):>20}")
+    if anni_rendita_int > 10:
+        print(f"  {'...':>6}{'...':>6}{'...':>18}{'...':>20}")
+    for k in range(max(6, anni_rendita_int - 4), anni_rendita_int + 1):
+        anno_abs = anni_servizio + k
+        r_reale = rendita_annua_nominale / ((1 + tasso_inflazione) ** anno_abs)
+        print(f"  {k:>6}{eta_pensionamento + k:>6}"
+              f"{'€ {:,.2f}'.format(rendita_annua_nominale):>18}"
+              f"{'€ {:,.2f}'.format(r_reale):>20}")
+
+    # --- Dettaglio composizione montante FP ---
+    print(f"\n>>> APPENDICE: Composizione Montante Fondo Pensione")
+    print(f"  Contributi dipendente (1% RAL)       : € {sum(r * 0.01 for r in storia_ral):,.2f}")
+    print(f"  Contributi datore (1% RAL)           : € {sum(r * 0.01 for r in storia_ral):,.2f}")
+    print(f"  Quote TFR versate                    : € {sum((r/13.5)-(r*0.005) for r in storia_ral):,.2f}")
+    print(f"  ─────────────────────────────────────")
+    print(f"  Totale contributi                    : € {totale_contributi_versati:,.2f}")
+    print(f"  Plusvalenze nette (rendimenti)        : € {plusvalenza_netta:,.2f}")
+    print(f"  ─────────────────────────────────────")
+    print(f"  Montante a scadenza                  : € {montante_fp_totale:,.2f}")
+    print(f"  Imposta 9% su contributi             : -€ {imposta_fp:,.2f}")
+    print(f"  Imposta su plusvalenze               : € 0.00 (già tassate anno per anno)")
+    print(f"  ═════════════════════════════════════")
+    print(f"  MONTANTE NETTO                       : € {montante_fp_netto:,.2f}")
+    print("=" * 85)
+
+
+simula_mondo_parallelo()
