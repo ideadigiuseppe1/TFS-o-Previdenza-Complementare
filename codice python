@@ -1,0 +1,175 @@
+import matplotlib.pyplot as plt
+
+# ==========================================
+# 1. PARAMETRI DI SIMULAZIONE
+# ==========================================
+eta_inizio = 18
+eta_pensione = 61
+anni_servizio = eta_pensione - eta_inizio # 43 anni
+
+tasso_crescita_stipendio = 0.0203 # 2.03% (Rinnovi contrattuali e progressione media)
+inflazione = 0.02 # 2% (Utilizzata per calcolare il potere d'acquisto reale)
+
+franchigia_tfs_per_anno = 309.87
+coeff_trasformazione_61 = 0.04639 # 4.639%
+
+# Scaglioni IRPEF
+scaglioni_irpef = [
+    (28000, 0.23), # Fino a 28.000: 23%
+    (50000, 0.33), # Da 28.001 a 50.000: 33%
+    (float('inf'), 0.43) # Oltre 50.000: 43%
+]
+
+# Struttura dei gradi militari (Mesi minimi di permanenza -> anni_start)
+gradi_struttura = [
+    {"grado": "Allievo", "anni_start": 0, "tabellare": 1268.95, "ritenuta": 111.67},
+    {"grado": "Finanziere", "anni_start": 0.5, "tabellare": 1714.80, "ritenuta": 172.55},
+    {"grado": "Maresciallo", "anni_start": 2, "tabellare": 2032.39, "ritenuta": 218.05},
+    {"grado": "Maresciallo Ordinario", "anni_start": 4, "tabellare": 2134.21, "ritenuta": 225.98},
+    {"grado": "Maresciallo Capo", "anni_start": 10, "tabellare": 2174.94, "ritenuta": 231.29},
+    {"grado": "Maresciallo Aiutante", "anni_start": 17, "tabellare": 2240.10, "ritenuta": 239.92},
+    {"grado": "Luogotenente", "anni_start": 25, "tabellare": 2337.85, "ritenuta": 253.71},
+    {"grado": "Luogotenente C.S.", "anni_start": 29, "tabellare": 2411.17, "ritenuta": 264.08}
+]
+
+# Assegni funzionali per anni di servizio
+assegni_funzionali = {
+    17: {"lordo": 1829.40, "imponibile": 1588.80},
+    27: {"lordo": 3070.50, "imponibile": 2666.64},
+    32: {"lordo": 3531.03, "imponibile": 3066.60}
+}
+
+# ==========================================
+# 2. FUNZIONI DI SUPPORTO
+# ==========================================
+def calcola_irpef(imponibile):
+    tasse = 0
+    reddito_rimanente = imponibile
+    limite_precedente = 0
+    for limite, aliquota in scaglioni_irpef:
+        fascia = limite - limite_precedente
+        if reddito_rimanente > fascia:
+            tasse += fascia * aliquota
+            reddito_rimanente -= fascia
+            limite_precedente = limite
+        else:
+            tasse += reddito_rimanente * aliquota
+            break
+    return tasse
+
+def ottieni_profilo_anno(anno):
+    grado_attuale = gradi_struttura[0]
+    for g in gradi_struttura:
+        if anno >= g["anni_start"]:
+            grado_attuale = g
+            
+    ass_funzionale_attuale = {"lordo": 0, "imponibile": 0}
+    if anno >= 32:
+        ass_funzionale_attuale = assegni_funzionali[32]
+    elif anno >= 27:
+        ass_funzionale_attuale = assegni_funzionali[27]
+    elif anno >= 17:
+        ass_funzionale_attuale = assegni_funzionali[17]
+        
+    return grado_attuale, ass_funzionale_attuale
+
+def calcola_valore_reale(valore_nominale, anni_ritardo):
+    """Sconta l'inflazione per restituire il potere d'acquisto odierno"""
+    return valore_nominale / ((1 + inflazione) ** anni_ritardo)
+
+# ==========================================
+# 3. MOTORE DI SIMULAZIONE (ANNO PER ANNO)
+# ==========================================
+storia_ral = []
+storia_imponibile_irpef = []
+storia_tasse = []
+storia_netto = []
+storia_anni = list(range(1, anni_servizio + 1))
+
+for anno in range(1, anni_servizio + 1):
+    rivalutazione = (1 + tasso_crescita_stipendio) ** (anno - 1)
+    grado, assegno = ottieni_profilo_anno(anno - 1)
+    
+    stipendio_mensile = grado["tabellare"] * rivalutazione
+    ritenuta_mensile = grado["ritenuta"] * rivalutazione
+    assegno_lordo = assegno["lordo"] * rivalutazione
+    assegno_imponibile = assegno["imponibile"] * rivalutazione
+    
+    # RAL: 12 mensilità + Tredicesima + Assegno
+    ral_anno = (stipendio_mensile * 13) + assegno_lordo
+    
+    # Ritenute: 12 mesi quota piena + 13esima agevolata all'8.80%
+    ritenute_annue = (ritenuta_mensile * 12) + (stipendio_mensile * 0.088)
+    imponibile_irpef = ral_anno - ritenute_annue - (assegno_lordo - assegno_imponibile)
+    
+    irpef_anno = calcola_irpef(imponibile_irpef)
+    netto_anno = ral_anno - ritenute_annue - irpef_anno
+    
+    storia_ral.append(ral_anno)
+    storia_imponibile_irpef.append(imponibile_irpef)
+    storia_tasse.append(irpef_anno)
+    storia_netto.append(netto_anno)
+
+stipendio_medio_netto = sum(storia_netto) / len(storia_netto)
+
+# ==========================================
+# 4. CALCOLO TFS (NOMINALE E REALE)
+# ==========================================
+ultima_ral = storia_ral[-1]
+tfs_lordo = (1 / 12) * 0.8 * ultima_ral * anni_servizio
+
+ultimi_5_imponibili = storia_imponibile_irpef[-5:]
+ultime_5_tasse = storia_tasse[-5:]
+aliquota_media_tfs = sum(ultime_5_tasse) / sum(ultimi_5_imponibili)
+
+base_imponibile_tfs = tfs_lordo - (franchigia_tfs_per_anno * anni_servizio)
+imposta_tfs = base_imponibile_tfs * aliquota_media_tfs
+tfs_netto = tfs_lordo - imposta_tfs
+
+# Calcolo Tranches (si scompone in base allo scaglione lordo)
+tranches_nette = []
+if tfs_lordo <= 50000:
+    tranches_nette = [tfs_netto]
+elif tfs_lordo <= 100000:
+    tasse_tranche_1 = (50000 / tfs_lordo) * imposta_tfs
+    tranches_nette.append(50000 - tasse_tranche_1)
+    tranches_nette.append(tfs_netto - (50000 - tasse_tranche_1))
+else:
+    tasse_tranche_1 = (50000 / tfs_lordo) * imposta_tfs
+    tranches_nette.append(50000 - tasse_tranche_1)
+    tranches_nette.append(50000 - tasse_tranche_1)
+    tranches_nette.append(tfs_netto - 2 * (50000 - tasse_tranche_1))
+
+# ==========================================
+# 5. OUTPUT E GRAFICO
+# ==========================================
+print("=== METRICHE DI VITA LAVORATIVA ===")
+print(f"Stipendio Medio Netto Annuo: {stipendio_medio_netto:,.2f} €")
+print(f"(Potere d'acquisto reale medio: {calcola_valore_reale(stipendio_medio_netto, anni_servizio/2):,.2f} €)\n")
+
+print("=== RISULTATI SCENARIO 1: TFS (18-61 anni) ===")
+print(f"Ultima RAL (Anno 43): {ultima_ral:,.2f} € (Reale: {calcola_valore_reale(ultima_ral, anni_servizio):,.2f} €)")
+print(f"Aliquota IRPEF media applicata al TFS: {aliquota_media_tfs*100:.2f}%")
+print(f"TFS Lordo: {tfs_lordo:,.2f} € (Reale: {calcola_valore_reale(tfs_lordo, anni_servizio):,.2f} €)")
+print(f"TFS Netto: {tfs_netto:,.2f} € (Reale: {calcola_valore_reale(tfs_netto, anni_servizio):,.2f} €)\n")
+
+print("--- Erogazione Tranches TFS (con svalutazione per ritardo) ---")
+for i, tranche in enumerate(tranches_nette):
+    ritardo_anni = 1 + i # 1° anno = 1, 2° anno = 2, ecc.
+    anni_svalutazione_totali = anni_servizio + ritardo_anni
+    tranche_reale = calcola_valore_reale(tranche, anni_svalutazione_totali)
+    
+    mesi_attesa = 12 + (12 * i)
+    print(f"Tranche {i+1} (dopo {mesi_attesa} mesi): {tranche:,.2f} € | Valore Reale Odierno: {tranche_reale:,.2f} €")
+
+# Creazione del grafico (Valori Nominali)
+plt.figure(figsize=(10, 6))
+plt.plot(storia_anni, storia_ral, label="RAL (Lorda Nominale)", color="blue", linewidth=2)
+plt.plot(storia_anni, storia_netto, label="Guadagno Netto Annuo (Nominale)", color="green", linewidth=2)
+plt.title("Proiezione Guadagno Annuo Nominale - Carriera 18-61 anni", fontsize=14)
+plt.xlabel("Anni di Servizio", fontsize=12)
+plt.ylabel("Euro (€)", fontsize=12)
+plt.grid(True, linestyle='--', alpha=0.7)
+plt.legend()
+plt.tight_layout()
+plt.show()
