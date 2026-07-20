@@ -236,9 +236,9 @@ def simula_mondo_parallelo():
     imposta_fp = totale_contributi_versati * aliquota_fp
     montante_fp_netto = montante_fp_totale - imposta_fp
 
-    # Suddivisione: 50% capitale + 50% rendita
-    lump_sum_fp = montante_fp_netto * 0.50
-    capitale_per_rendita = montante_fp_netto * 0.50
+    # Suddivisione: 60% capitale + 40% rendita
+    lump_sum_fp = montante_fp_netto * 0.60
+    capitale_per_rendita = montante_fp_netto * 0.40
 
     # Lump sum: erogato subito al pensionamento
     lump_sum_fp_reale = lump_sum_fp / ((1 + tasso_inflazione) ** anni_servizio)
@@ -376,9 +376,9 @@ def simula_mondo_parallelo():
     print(f"  MONTANTE NETTO DISPONIBILE            : € {montante_fp_netto:,.2f}")
     print(f"")
     print(f"  --- Erogazione ---")
-    print(f"  50% Capitale (lump sum subito)        : € {lump_sum_fp:,.2f}")
+    print(f"  60% Capitale (lump sum subito)        : € {lump_sum_fp:,.2f}")
     print(f"       → in € oggi                     : € {lump_sum_fp_reale:,.2f}")
-    print(f"  50% Rendita Vitalizia ({n_rendita:.1f} anni)    :")
+    print(f"  40% Rendita Vitalizia ({n_rendita:.1f} anni)    :")
     print(f"       Rendita annua nominale           : € {rendita_annua_nominale:,.2f}")
     print(f"       Rendita mensile nominale         : € {rendita_mensile_nominale:,.2f}")
     print(f"       Totale rendite nominali          : € {rendita_totale_nominale:,.2f}")
