@@ -1,58 +1,70 @@
 # TFS-o-Previdenza-Complementare
+Questo progetto è un modello di simulazione finanziaria che valuta l'impatto economico di lungo periodo derivante dall'eventuale transizione del personale del Comparto Sicurezza e Difesa dall'attuale regime di Trattamento di Fine Servizio (TFS) al sistema di Trattamento di Fine Rapporto (TFR) integrato con la previdenza complementare negoziale.
+
 🎯 Il senso del progetto
+Il personale in regime di diritto pubblico si trova in una condizione di *stallo previdenziale*. Le proiezioni della Ragioneria Generale dello Stato evidenziano tassi di sostituzione del sistema pensionistico pubblico in costante contrazione. Il problema è amplificato per il comparto militare, caratterizzato da un accesso al pensionamento anagraficamente anticipato rispetto al mondo civile.
 
-Attualmente, il personale militare e le forze di polizia (Magistrati, Professori ordinari universitari e altre figure professionali) si trovano in un limbo previdenziale. Nonostante le mobilitazioni di varie associazioni per la creazione di un Fondo Pensione di categoria, lo Stato (in qualità di datore di lavoro) rimanda la responsabilità ai sindacati per l'avvio del tavolo negoziale, creando uno stallo confermato anche da diverse sentenze.
+Il simulatore dimostra scientificamente l'esistenza di un doppio beneficio ottimale:
+• Per il Lavoratore: a fronte di un contributo minimo (1% della RAL), si beneficia del contributo paritetico del datore di lavoro (1%) e della deducibilità fiscale IRPEF. Al posto del vecchio TFS (erogato a rate dallo Stato con anni di ritardo), il nuovo sistema basato su TFR e Fondo Pensione garantisce la liquidazione immediata del 60% dell'intero montante netto come capitale subito all'atto del pensionamento, mentre il restante 40% viene erogato come rendita vitalizia a integrazione della pensione.
+• Per lo Stato: l'erogazione dei flussi correnti al Fondo Pensione genera un risparmio netto rispetto all'esborso differito delle ingenti liquidazioni TFS.
 
-Spesso si discute della cosiddetta "previdenza dedicata" (es. l'aumento dei coefficienti di trasformazione). Tuttavia, questa soluzione presenta un rischio enorme: è una misura puramente politica e può essere modificata o cancellata da qualsiasi governo in carica.
+## 📚 Presupposti e contesto normativo
+• Regime Pubblico (TFS): pari a 1/12 dell'80% dell'ultima retribuzione utile per gli anni di servizio.
+• Maggiorazione Art. 6-bis D.L. 387/1987: il modello include per tutti gli scenari l'incremento del 15% (c.d. "sei scatt"i) sulla base computabile TFS. La condizione di accesso (35 anni di servizio o 55 anni di età alla cessazione per limiti di ordinamento) risulta verificata in ognuna delle simulazioni.
+• Tassazione Differenziata: il TFS sconta la tassazione separata su base imponibile ridotta da franchigia. Il Fondo Pensione applica un'aliquota sostitutiva agevolata sul capitale che decresce dal 15% fino al 9% minimo in base agli anni di permanenza.
 
-La Previdenza Complementare, al contrario, è un contratto finanziario privato e normato, che mette al sicuro il capitale del lavoratore. Inoltre, rappresenta oggi il miglior strumento a disposizione per ottenere un impatto economico immediato e tangibile grazie alla deducibilità fiscale dei versamenti volontari (fino a 5.300,00 € annui): soldi che tornano direttamente in tasca al lavoratore in fase di conguaglio IRPEF.
+## 📊 Ipotesi finanziarie e metodologia
+### 1. Dati Retributivi di Riferimento
+* I parametri stipendiali inseriti originano dai dati ufficiali del **Ministero dell'Economia e delle Finanze (MEF)**.
+* I flussi rispecchiano le progressioni storiche e i rinnovi contrattuali applicati al personale della **Guardia di Finanza**.
+* Il modello isola la retribuzione tabellare, l'IIS conglobata e l'**Assegno Funzionale**. Quest'ultimo viene mantenuto nominalmente statico e **privo di rivalutazione contrattuale**, rispecchiando fedelmente le dinamiche reali post-2008.
 
-Questo studio quantitativo nasce per dimostrare, dati alla mano, che per i militari (e le altre figure professionali) passare dall'attuale sistema di liquidazione (TFS) a un sistema basato su TFR e Fondo Pensione Negoziale non è solo un'opzione, ma un'opportunità finanziaria superiore.
+### 2. Strategia di Investimento "Life Cycle" e Rendimenti Netti
+* Il modello adotta una strategia multi-comparto mutuata dalle linee guida *Target Date* di Vanguard:
+  * **Fino a 45 anni:** 100% Comparto Azionario.
+  * **Da 46 a 50 anni:** 100% Profilo Bilanciato Dinamico (**70% Az. / 30% Obbl.**).
+  * **Da 51 a 55 anni:** 100% Profilo Bilanciato Crescita (**50% Az. / 50% Obbl.**).
+  * **Da 56 anni alla pensione:** 100% Profilo Bilanciato Prudente (**30% Az. / 70% Obbl.**).
+* I rendimenti storici e i costi (**TER medio** del fondo negoziale Perseo-Sirio) sono estratti dalle Note Informative **COVIP**.
+* I rendimenti sono stati normalizzati tramite un **Factor Drop** cautelativo per azzerare l'ottimismo da benchmark (abbattimento del **3,5%** annuo sull'azionario e dello **0,60%** sull'obbligazionario), incorporando l'imposta sostitutiva annua del **20%** e il *cash drag*.
 
-📚 Premesse e Contesto Normativo
-Il Regime pubblico (TFS)
+### 3. Attualizzazione dei Ritardi dello Stato (VAN)
+* Lo Stato eroga il TFS con differimenti normativi compresi tra **12 e 36 mesi** a seconda dell'importo lordo.
+* Il simulatore calcola il **Valore Attuale Netto (VAN)** di tali flussi futuri differiti, utilizzando come tasso di sconto finanziario il **2,00%**, ancorato al target di stabilità monetaria della **Banca Centrale Europea (BCE)**. Ciò quantifica l'esatta perdita di potere d'acquisto reale dovuta al ritardo pubblico.
 
-I militari, i professori ordinari e i magistrati usufruiscono del Trattamento di Fine Servizio (TFS). Questa "buonuscita" è calcolata prendendo un dodicesimo dell'80% dell'ultima retribuzione annua lorda (RAL) percepita, moltiplicata per gli anni di servizio (tredicesima inclusa).
-Il Regime generale (TFR)
+### 4. Fase di Rendita
+* La conversione del **40% del montante netto** in rendita si basa sulle tabelle di mortalità **ISTAT aggiornate al 2026**.
+* I coefficienti di trasformazione derivano dai prospetti ufficiali del Fondo Perseo-Sirio aggiornati al **6 ottobre 2026**. La rendita viene rivalutata a un tasso netto prudenziale del **2,00% annuo**.
 
-La stragrande maggioranza dei dipendenti pubblici e privati ha un'indennità calcolata tramite il Trattamento di Fine Rapporto (art. 2120 c.c.): per ogni anno si accantona una quota pari alla RAL divisa per 13.5. Questo accantonamento viene rivalutato annualmente (1,5% fisso + 75% dell'inflazione ISTAT).
-La Previdenza complementare e la flessibilità
+---
 
-Con l'attuale legislazione (Dlgs 252/2005 e le novità previste dal 1 luglio 2026 sul silenzio-assenso), il lavoratore privato può destinare il TFR a un fondo pensione.
-A differenza del TFS (o del TFR lasciato in azienda) che è bloccato fino alla fine del servizio, il montante nel Fondo Pensione offre ampie garanzie di anticipazione durante la vita lavorativa (acquisto prima casa, spese mediche e, per una quota fino al 30%, per qualsiasi altra esigenza senza obbligo di giustificazione).
+## 🔬 Gli Scenari Analizzati
 
-🔬 Obiettivo dello studio
+Il motore econometrico confronta i due regimi su **4 pilastri di carriera**:
 
-Vogliamo rispondere a una domanda chiara: e se i dipendenti pubblici in regime di TFS rinunciassero, tramite tavolo negoziale, al TFS per trasformarlo in TFR e aderire al Fondo Pensione Complementare? Come cambierebbe la loro ricchezza finale?
+* **Scenario 1:** Arruolamento a 18 anni, pensionamento a 61 anni (Senza Ausiliaria).
+* **Scenario 2:** Arruolamento a 18 anni, pensionamento a 66 anni (Con 5 anni di Ausiliaria).
+* **Scenario 3:** Arruolamento a 25 anni, pensionamento a 61 anni (Senza Ausiliaria).
+* **Scenario 4:** Arruolamento a 25 anni, pensionamento a 66 anni (Con 5 anni di Ausiliaria).
 
-Per farlo, confronteremo i due regimi su 4 scenari di carriera militare:
+---
 
-    Scenario 1: Arruolamento a 18 anni, pensione a 61 anni (Senza Ausiliaria).
+## 🛠️ Come Utilizzare il Progetto (Guida alla Riproducibilità)
 
-    Scenario 2: Arruolamento a 18 anni, pensione a 66 anni (Con 5 anni di Ausiliaria).
+### 💻 Per gli analisti (Uso dei file Python via Release)
+Tutti gli script principali sono distribuiti all'interno delle **GitHub Releases** del progetto (es. `v1.0.0-scenario1`). Ogni release contiene il codice sorgente autoconsistente.
 
-    Scenario 3: Arruolamento a 25 anni, pensione a 61 anni (Senza Ausiliaria).
+1. **Clonare la repository** e accedere alla cartella principale:
+   ```bash
+   git clone https://github.com/tuo-username/TFS-o-Previdenza-Complementare.git
+   cd TFS-o-Previdenza-Complementare
+   ```
+2. Assicurarsi di aver posizionato i fogli parametrici nella cartella `dati/`.
+3. **Eseguire lo script** d'interesse:
+   ```bash
+   python src/scenario_1.py
+   ```
+4. **Personalizzazione:** All'inizio di ogni file `.py` sono isolate le variabili globali (`ETA_INIZIALE`, `ETA_PENSIONAMENTO`, `TASSO_INFLAZIONE`). È possibile modificare liberamente tali valori numerici per adattare la proiezione a carriere personalizzate.
 
-    Scenario 4: Arruolamento a 25 anni, pensione a 66 anni (Con 5 anni di Ausiliaria).
-
-📊 Dati, Variabili e Modello Matematico
-
-Il modello di simulazione terrà conto dei seguenti fattori:
-
-    Curva Stipendiale: Andamento dello stipendio lordo per ogni grado fino all'apice per definire la base di calcolo esatta.
-
-    Crescita Retributiva: Tasso di crescita legato ai rinnovi contrattuali e progressione di carriera.
-
-    Inflazione: Fissata in modo prudenziale a una media del 2% annuo.
-
-    Strategia Lifecycle (Investimento): Non un semplice "bilanciato". Il modello simulerà un comparto Azionario dai 18 ai 50 anni, passando a un Bilanciato/Garantito dai 50 alla pensione (il tutto al netto del TER - Total Expense Ratio). Verrà inclusa un'analisi di sensitività sui rendimenti.
-
-    Cash Flow Mensile (Versamenti): Il datore di lavoro (Stato) versa l'1%, ma il lavoratore deve versare l'1% di tasca propria. Il modello valuterà l'impatto sul reddito netto mensile (minore per chi ha il Fondo, ma compensato dal rendimento e dalle detrazioni).
-
-    Tassazione TFS: Aliquota media IRPEF su una base imponibile ridotta (franchigia di 309,87 € per ogni anno di servizio).
-
-    Tassazione Fondo Pensione: Agevolata, decrescente dal 15% al 9% in base agli anni di permanenza nel fondo.
-
-    Attualizzazione (VAN) dei ritardi: Il TFS statale viene pagato in tranches ritardate (a partire da 1-2 anni dopo la pensione). Il modello calcolerà il Valore Attuale Netto (VAN) per misurare la reale perdita di potere d'acquisto dovuta al ritardo, per confrontarlo con l'immediata disponibilità della previdenza complementare.
-
-    Erogazione: Confronto tra la liquidità piena del TFS statale e l'erogazione del Fondo Pensione (50% in capitale immediato all'atto del pensionamento e 50% in rendita vitalizia calcolata su aspettativa di vita ISTAT).
+### 📄 Per i non addetti ai lavori (Guida PDF Prossimamente Disponibile)
+Per chi non possiede competenze di programmazione o non ha installato l'ambiente Python sul proprio terminale, verrà pubblicata all'interno delle Release una **Guida Completa in formato PDF**. Questo documento conterrà i report testuali, i grafici di sintesi e la spiegazione di tutte le variabili calcolate dal motore algoritmico, rendendo lo studio pienamente accessibile.
