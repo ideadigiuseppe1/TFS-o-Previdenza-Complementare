@@ -40,7 +40,7 @@ Il simulatore dimostra scientificamente l'esistenza di un doppio beneficio ottim
 
 ## 🔬 Gli Scenari Analizzati
 
-Il motore econometrico confronta i due regimi su **4 pilastri di carriera**:
+Il lavoro confronta i due regimi su **4 carriere**:
 
 * **Scenario 1:** Arruolamento a 18 anni, pensionamento a 61 anni (Senza Ausiliaria).
 * **Scenario 2:** Arruolamento a 18 anni, pensionamento a 66 anni (Con 5 anni di Ausiliaria).
@@ -49,10 +49,10 @@ Il motore econometrico confronta i due regimi su **4 pilastri di carriera**:
 
 ---
 
-## 🛠️ Come Utilizzare il Progetto (Guida alla Riproducibilità)
+## 🛠️ Come utilizzare il progetto
 
 ### 💻 Per gli analisti (Uso dei file Python via Release)
-Tutti gli script principali sono distribuiti all'interno delle **GitHub Releases** del progetto (es. `v1.0.0-scenario1`). Ogni release contiene il codice sorgente autoconsistente.
+Tutti gli script principali sono distribuiti all'interno delle Releases del progetto. Ogni release contiene il codice sorgente autoconsistente.
 
 1. **Clonare la repository** e accedere alla cartella principale:
    ```bash
@@ -67,4 +67,4 @@ Tutti gli script principali sono distribuiti all'interno delle **GitHub Releases
 4. **Personalizzazione:** All'inizio di ogni file `.py` sono isolate le variabili globali (`ETA_INIZIALE`, `ETA_PENSIONAMENTO`, `TASSO_INFLAZIONE`). È possibile modificare liberamente tali valori numerici per adattare la proiezione a carriere personalizzate.
 
 ### 📄 Per i non addetti ai lavori (Guida PDF Prossimamente Disponibile)
-Per chi non possiede competenze di programmazione o non ha installato l'ambiente Python sul proprio terminale, verrà pubblicata all'interno delle Release una **Guida Completa in formato PDF**. Questo documento conterrà i report testuali, i grafici di sintesi e la spiegazione di tutte le variabili calcolate dal motore algoritmico, rendendo lo studio pienamente accessibile.
+Per chi non possiede competenze di programmazione o non ha installato l'ambiente Python sul proprio PC, verrà pubblicata all'interno delle Releases **un testo in PDF** . Questo documento conterrà i report testuali, i grafici di sintesi e la spiegazione di tutte le variabili calcolate dal motore algoritmico, rendendo lo studio pienamente accessibile.
