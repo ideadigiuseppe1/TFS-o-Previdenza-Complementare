@@ -77,6 +77,6 @@ I risultati dei quattro scenari sono disponibili nella Wiki (si, sempre lì). Si
 
 ## Limiti e riproducibilità
 
-Il modello utilizza passi annuali interi; non ricostruisce ogni passaggio di carriera con precisione semestrale e non riproduce integralmente tutti i dettagli amministrativi, fiscali e attuariali. In particolare, la base retributiva utile al TFS è approssimata tramite un coefficiente del 90% della RAL prima dell'applicazione dei sei scatti: questo coefficiente è una scelta del modello, non una percentuale stabilita direttamente dalla norma.
+Il modello utilizza un aumento dello stipendio, pari al 2.03% annuo, già dal primo anno, periodo in cui il neo-militare è allievo e - nei fatti - potrebbe non ricevere una crescita salariale pari al tasso scelto; non ricostruisce ogni passaggio di carriera con precisione semestrale e non riproduce integralmente tutti i dettagli amministrativi, fiscali e attuariali. In particolare, la base retributiva utile al TFS è approssimata tramite un coefficiente del 90% della RAL prima dell'applicazione dei sei scatti: questo coefficiente è una scelta del modello, non una percentuale stabilita direttamente dalla norma.
 
 Le ipotesi, i parametri, il codice Python e le fonti devono rimanere modificabili e verificabili. Quando una formula o un riferimento normativo viene aggiornato, occorre rieseguire tutti e quattro gli scenari e riallineare la pagina dei risultati con gli output degli script.
