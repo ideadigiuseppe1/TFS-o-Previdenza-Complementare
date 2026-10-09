@@ -1,70 +1,82 @@
-# TFS-o-Previdenza-Complementare
-Questo progetto è un modello di simulazione finanziaria che valuta l'impatto economico di lungo periodo derivante dall'eventuale transizione del personale del Comparto Sicurezza e Difesa dall'attuale regime di Trattamento di Fine Servizio (TFS) al sistema di Trattamento di Fine Rapporto (TFR) integrato con la previdenza complementare negoziale.
+# TFS o previdenza complementare?
 
-🎯 Il senso del progetto
-Il personale in regime di diritto pubblico si trova in una condizione di *stallo previdenziale*. Le proiezioni della Ragioneria Generale dello Stato evidenziano tassi di sostituzione del sistema pensionistico pubblico in costante contrazione. Il problema è amplificato per il comparto militare, caratterizzato da un accesso al pensionamento anagraficamente anticipato rispetto al mondo civile.
+Questo progetto nasce da una domanda molto semplice:
 
-Il simulatore dimostra scientificamente l'esistenza di un doppio beneficio ottimale:
-• Per il Lavoratore: a fronte di un contributo minimo (1% della RAL), si beneficia del contributo paritetico del datore di lavoro (1%) e della deducibilità fiscale IRPEF. Al posto del vecchio TFS (erogato a rate dallo Stato con anni di ritardo), il nuovo sistema basato su TFR e Fondo Pensione garantisce la liquidazione immediata del 60% dell'intero montante netto come capitale subito all'atto del pensionamento, mentre il restante 40% viene erogato come rendita vitalizia a integrazione della pensione.
-• Per lo Stato: l'erogazione dei flussi correnti al Fondo Pensione genera un risparmio netto rispetto all'esborso differito delle ingenti liquidazioni TFS.
+_**a parità di carriera lavorativa, sarebbe economicamente più conveniente per il lavoratore rimanere nel sistema TFS oppure disporre di un sistema TFR associato alla previdenza complementare?**_
 
-## 📚 Presupposti e contesto normativo
-• Regime Pubblico (TFS): pari a 1/12 dell'80% dell'ultima retribuzione utile per gli anni di servizio.
-• Maggiorazione Art. 6-bis D.L. 387/1987: il modello include per tutti gli scenari l'incremento del 15% (c.d. "sei scatt"i) sulla base computabile TFS. La condizione di accesso (35 anni di servizio o 55 anni di età alla cessazione per limiti di ordinamento) risulta verificata in ognuna delle simulazioni.
-• Tassazione Differenziata: il TFS sconta la tassazione separata su base imponibile ridotta da franchigia. Il Fondo Pensione applica un'aliquota sostitutiva agevolata sul capitale che decresce dal 15% fino al 9% minimo in base agli anni di permanenza.
+La domanda, apparentemente semplice, richiede in realtà di mettere insieme aspetti previdenziali, retributivi, fiscali e finanziari. Il progetto cerca quindi di costruire un modello quantitativo che permetta di confrontare i due sistemi mantenendo il più possibile identiche le condizioni di partenza.
 
-## 📊 Ipotesi finanziarie e metodologia
-### 1. Dati Retributivi di Riferimento
-* I parametri stipendiali inseriti originano dai dati ufficiali del **Ministero dell'Economia e delle Finanze (MEF)**.
-* I flussi rispecchiano le progressioni storiche e i rinnovi contrattuali applicati al personale della **Guardia di Finanza**.
-* Il modello isola la retribuzione tabellare, l'IIS conglobata e l'**Assegno Funzionale**. Quest'ultimo viene mantenuto nominalmente statico e **privo di rivalutazione contrattuale**, rispecchiando fedelmente le dinamiche reali post-2008.
+L'obiettivo non è dimostrare a priori che una delle due alternative sia migliore. L'obiettivo è costruire un modello trasparente, modificabile e riproducibile, nel quale il risultato dipenda dalle ipotesi inserite.
 
-### 2. Strategia di Investimento "Life Cycle" e Rendimenti Netti
-* Il modello adotta una strategia multi-comparto mutuata dalle linee guida *Target Date* di Vanguard:
-  * **Fino a 45 anni:** 100% Comparto Azionario.
-  * **Da 46 a 50 anni:** 100% Profilo Bilanciato Dinamico (**70% Az. / 30% Obbl.**).
-  * **Da 51 a 55 anni:** 100% Profilo Bilanciato Crescita (**50% Az. / 50% Obbl.**).
-  * **Da 56 anni alla pensione:** 100% Profilo Bilanciato Prudente (**30% Az. / 70% Obbl.**).
-* I rendimenti storici e i costi (**TER medio** del fondo negoziale Perseo-Sirio) sono estratti dalle Note Informative **COVIP**.
-* I rendimenti sono stati normalizzati tramite un **Factor Drop** cautelativo per azzerare l'ottimismo da benchmark (abbattimento del **3,5%** annuo sull'azionario e dello **0,60%** sull'obbligazionario), incorporando l'imposta sostitutiva annua del **20%** e il *cash drag*.
+## Il problema
 
-### 3. Attualizzazione dei Ritardi dello Stato (VAN)
-* Lo Stato eroga il TFS con differimenti normativi compresi tra **12 e 36 mesi** a seconda dell'importo lordo.
-* Il simulatore calcola il **Valore Attuale Netto (VAN)** di tali flussi futuri differiti, utilizzando come tasso di sconto finanziario il **2,00%**, ancorato al target di stabilità monetaria della **Banca Centrale Europea (BCE)**. Ciò quantifica l'esatta perdita di potere d'acquisto reale dovuta al ritardo pubblico.
+Il trattamento di fine servizio (TFS) rappresenta una componente importante della remunerazione differita per il personale che rimane assoggettato al relativo regime.
 
-### 4. Fase di Rendita
-* La conversione del **40% del montante netto** in rendita si basa sulle tabelle di mortalità **ISTAT aggiornate al 2026**.
-* I coefficienti di trasformazione derivano dai prospetti ufficiali del Fondo Perseo-Sirio aggiornati al **6 ottobre 2026**. La rendita viene rivalutata a un tasso netto prudenziale del **2,00% annuo**.
+**La previdenza complementare segue invece una logica differente.**
 
----
+In un ipotetico sistema basato su TFR e previdenza complementare, le somme destinate al TFR vengono accantonate progressivamente e investite nel tempo. Al TFR possono aggiungersi i contributi del lavoratore e un eventuale contributo datoriale, qui assunto come ipotesi di simulazione.
 
-## 🔬 Gli Scenari Analizzati
+La differenza fondamentale tra i due sistemi riguarda quindi anche il meccanismo di accumulazione:
 
-Il lavoro confronta i due regimi su **4 carriere**:
+- il TFS viene stimato a partire dalla retribuzione utile e dagli anni di servizio, secondo la formula implementata e le relative semplificazioni;
+- il TFR viene accantonato progressivamente;
+- la previdenza complementare investe nel tempo il capitale accumulato;
+- il risultato dipende dalla durata dell'investimento, dai rendimenti, dai costi e dalla fiscalità.
 
-* **Scenario 1:** Arruolamento a 18 anni, pensionamento a 61 anni (Senza Ausiliaria).
-* **Scenario 2:** Arruolamento a 18 anni, pensionamento a 66 anni (Con 5 anni di Ausiliaria).
-* **Scenario 3:** Arruolamento a 25 anni, pensionamento a 61 anni (Senza Ausiliaria).
-* **Scenario 4:** Arruolamento a 25 anni, pensionamento a 66 anni (Con 5 anni di Ausiliaria).
+Il progetto nasce dall'esigenza di quantificare questa differenza.
 
----
+## Una simulazione, non una previsione
 
-## 🛠️ Come utilizzare il progetto
+Il modello non cerca di prevedere quale sarà il rendimento effettivo dei mercati finanziari nei prossimi decenni. Allo stesso modo, non pretende di stabilire che la previdenza complementare sia universalmente più conveniente del TFS.
 
-### 💻 Per gli analisti (Uso dei file Python via Release)
-Tutti gli script principali sono distribuiti all'interno delle Releases del progetto. Ogni release contiene il codice sorgente autoconsistente.
+La domanda affrontata è più circoscritta:
 
-1. **Clonare la repository** e accedere alla cartella principale:
-   ```bash
-   git clone https://github.com/tuo-username/TFS-o-Previdenza-Complementare.git
-   cd TFS-o-Previdenza-Complementare
-   ```
-2. Assicurarsi di aver posizionato i fogli parametrici nella cartella `dati/`.
-3. **Eseguire lo script** d'interesse:
-   ```bash
-   python src/scenario_1.py
-   ```
-4. **Personalizzazione:** All'inizio di ogni file `.py` sono isolate le variabili globali (`ETA_INIZIALE`, `ETA_PENSIONAMENTO`, `TASSO_INFLAZIONE`). È possibile modificare liberamente tali valori numerici per adattare la proiezione a carriere personalizzate.
+_**che cosa accadrebbe, secondo determinate ipotesi retributive, finanziarie e fiscali, se una carriera comparabile fosse svolta alternativamente nel regime TFS oppure nel regime TFR più previdenza complementare?**_
 
-### 📄 Per i non addetti ai lavori (Guida PDF Prossimamente Disponibile)
-Per chi non possiede competenze di programmazione o non ha installato l'ambiente Python sul proprio PC, verrà pubblicata all'interno delle Releases **un testo in PDF** . Questo documento conterrà i report testuali, i grafici di sintesi e la spiegazione di tutte le variabili calcolate dal motore algoritmico, rendendo lo studio pienamente accessibile.
+Per questo motivo le principali ipotesi vengono esplicitate e gli script Python utilizzati per le simulazioni sono resi disponibili nel repository. In questo modo è possibile modificare i parametri e verificare come cambiano i risultati.
+
+## La struttura del progetto
+
+Il progetto ricostruisce una carriera di riferimento nella Guardia di Finanza, con una progressione retributiva basata sui gradi e sugli assegni funzionali indicati nei parametri del modello. La carriera è applicata a quattro combinazioni di età d'ingresso e pensionamento:
+
+| Scenario | Età d'ingresso | Età di pensionamento | Anni simulati |
+|---|---:|---:|---:|
+| 1 | 18 anni | 61 anni | 43 |
+| 2 | 18 anni | 66 anni | 48 |
+| 3 | 25 anni | 61 anni | 36 |
+| 4 | 25 anni | 66 anni | 41 |
+
+Gli scenari a 66 anni includono, per convenzione di modello, cinque anni aggiuntivi di ausiliaria. Durante questi anni il grado e la componente stipendiale di riferimento rimangono quelli massimi raggiunti, mentre continua ad applicarsi la crescita annua ipotizzata del 2,03%. Gli anni sono conteggiati nel modello ai fini dell'anzianità utile al TFS e continuano a generare i flussi di TFR e i contributi alla previdenza complementare ipotizzati. Questa rappresentazione non è un modello amministrativo completo dell'ausiliaria.
+
+I quattro scenari non rappresentano quattro carriere differenti per struttura, ma quattro applicazioni dello stesso impianto di calcolo a diverse combinazioni di età d'ingresso e pensionamento.
+
+## Carriera e retribuzione
+
+La scelta di una carriera di riferimento è motivata dalla disponibilità di informazioni su gradi, anzianità, stipendio tabellare e assegni funzionali. La progressione e le tabelle utilizzate sono riportate nella Wiki del progetto.
+
+Il modello usa due componenti della crescita retributiva:
+
+1. la progressione di carriera, che modifica lo stipendio tabellare e l'assegno funzionale in relazione all'anzianità;
+2. la crescita retributiva nel tempo, rappresentata da una rivalutazione composta del 2,03% annuo.
+
+Il 2,03% è ricavato dal tasso annuo composto tra il primo e l'ultimo dato della serie storica utilizzata, dal 1° gennaio 2001 al 1° gennaio 2024. È un parametro di simulazione, non una previsione certa dei futuri rinnovi contrattuali. La procedura e i dati sono descritti nella Wiki del progetto.
+
+## Il TFS
+
+Il modello contiene un calcolo del TFS. Nella wiki è descritta la formula concretamente utilizzata, i riferimenti normativi relativi alla base contributiva, ai sei scatti e alla franchigia fiscale, nonché le semplificazioni che impediscono di interpretare l'output come una liquidazione ufficiale individuale.
+
+## Il TFR e la previdenza complementare
+
+Il percorso alternativo ipotizza il conferimento del TFR a una forma pensionistica complementare e un contributo dell'1% della RAL da parte del lavoratore. È inoltre ipotizzato un contributo datoriale dell'1% della RAL. Quest'ultimo è un parametro del caso di studio e non implica che il personale considerato disponga già di un fondo di categoria operativo che riconosca tale versamento.
+
+Il montante viene investito secondo una strategia Life-Cycle, con rendimenti medi netti distinti per fascia d'età. I rendimenti vengono trattati come già al netto della tassazione annuale degli investimenti. Al pensionamento il modello utilizza una ripartizione di riferimento del 50% in capitale e 50% destinato alla rendita, nei limiti e con le semplificazioni esplicitati nella Wiki. Nella stessa Wiki viene documentata la ricostruzione dei rendimenti dei comparti azionario e obbligazionario, basata sui benchmark e sui fattori di normalizzazione.
+
+## Risultati
+
+I risultati dei quattro scenari sono disponibili nella Wiki (si, sempre lì). Si tratta di risultati modellistici, dipendenti dalle formule e dalle ipotesi adottate. Non rappresentano una previsione finanziaria garantita né una prova che uno dei due sistemi sia sempre più conveniente.
+
+## Limiti e riproducibilità
+
+Il modello utilizza passi annuali interi; non ricostruisce ogni passaggio di carriera con precisione semestrale e non riproduce integralmente tutti i dettagli amministrativi, fiscali e attuariali. In particolare, la base retributiva utile al TFS è approssimata tramite un coefficiente del 90% della RAL prima dell'applicazione dei sei scatti: questo coefficiente è una scelta del modello, non una percentuale stabilita direttamente dalla norma.
+
+Le ipotesi, i parametri, il codice Python e le fonti devono rimanere modificabili e verificabili. Quando una formula o un riferimento normativo viene aggiornato, occorre rieseguire tutti e quattro gli scenari e riallineare la pagina dei risultati con gli output degli script.
